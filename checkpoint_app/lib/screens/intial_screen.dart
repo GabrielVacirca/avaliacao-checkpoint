@@ -1,63 +1,117 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:checkpoint_app/widgets/product_card_widget.dart';
-import 'package:checkpoint_app/widgets/subscription_section_widget.dart';
 
-class InitialScreen extends StatefulWidget {
+class InitialScreen extends StatelessWidget {
   const InitialScreen({super.key});
 
   @override
-  State<InitialScreen> createState() => _InitialScreenState();
-}
-
-class _InitialScreenState extends State<InitialScreen> {
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        actions: const [
-          Icon(Icons.person_outline, size: 30),
-          SizedBox(width: 15),
-          Icon(Icons.shopping_cart_outlined, size: 30),
-          SizedBox(width: 15),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'o que você procura?',
+                suffixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(50),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+                contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+              ),
+            ),
+          ),
+        ),
+        Container(
+          width: double.infinity,
+          height: 520,
+          decoration: const BoxDecoration(
+            color: Color(0xFF090129),
+            image: DecorationImage(
+              image: AssetImage('assets/fundo.png'),
+              fit: BoxFit.cover,
+              opacity: 0.2,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/hero.png',
+                  height: 250,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Hora de abraçar seu',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontFamily: GoogleFonts.orbitron().fontFamily,
+                    color: const Color(0xFFFF55DF),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'lado geek!',
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontFamily: GoogleFonts.orbitron().fontFamily,
+                    color: const Color(0xFF8FFF24),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF7B0BF7),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: Text(
+                        'Ver novidades!',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: GoogleFonts.orbitron().fontFamily,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Column(
           children: [
-            // Espaço para o seu HeroSectionWidget()
-            
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
+              padding: const EdgeInsets.all(20.0),
               child: Text(
-                'Promos Especiais',
-                textAlign: TextAlign.center,
+                'Promos especiais',
                 style: TextStyle(
                   fontSize: 28,
-                  fontWeight: FontWeight.bold,
                   fontFamily: GoogleFonts.orbitron().fontFamily,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF7B0BF7),
                 ),
               ),
             ),
-
-            const ProductCardWidget(
-              url: 'https://placeholder.co/600x600.png',
-              nome: 'Mochila do Ben10',
-              preco: '200,00',
-            ),
-
-            const ProductCardWidget(
-              url: 'https://placeholder.co/600x600.png',
-              nome: 'Penico do Wolverine',
-              preco: '170,00',
-            ),
-
-            const SubscriptionSectionWidget(),
           ],
         ),
-      ),
+      ],
     );
   }
 }
