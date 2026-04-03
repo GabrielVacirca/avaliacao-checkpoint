@@ -7,7 +7,7 @@ class SubscriptionSectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF8FFF24), // Verde limão do print
+      color: const Color(0xFF8FFF24), 
       padding: const EdgeInsets.all(25),
       child: Column(
         children: [
@@ -45,7 +45,7 @@ class SubscriptionSectionWidget extends StatelessWidget {
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF7B0BF7), // Roxo do print
+              backgroundColor: const Color(0xFF7B0BF7),
               padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
             ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-// Importe seus widgets aqui (exemplo):
-// import 'package:seu_projeto/widgets/product_card_widget.dart';
+import 'package:checkpoint_app/widgets/product_card_widget.dart';
+import 'package:checkpoint_app/widgets/subscription_section_widget.dart';
 
 class InitialScreen extends StatefulWidget {
   const InitialScreen({super.key});
@@ -27,7 +27,7 @@ class _InitialScreenState extends State<InitialScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Aqui iria o seu HeroSectionWidget() que já deve estar pronto
+            // Espaço para o seu HeroSectionWidget()
             
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
@@ -42,7 +42,6 @@ class _InitialScreenState extends State<InitialScreen> {
               ),
             ),
 
-            // Exemplo de uso do card de produto
             const ProductCardWidget(
               url: 'https://placeholder.co/600x600.png',
               nome: 'Mochila do Ben10',
