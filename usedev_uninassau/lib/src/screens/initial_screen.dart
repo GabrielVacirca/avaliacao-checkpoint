@@ -1,56 +1,128 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:usedev_uninassau/src/widgets/hero_section_widget.dart';
+import 'package:usedev_uninassau/src/models/product_model.dart';
+import 'package:usedev_uninassau/src/services/cart_service.dart';
+import 'package:usedev_uninassau/src/services/product_service.dart';
+import 'package:usedev_uninassau/src/widgets/custom_app_bar_widget.dart';
 import 'package:usedev_uninassau/src/widgets/product_card_widget.dart';
-import 'package:usedev_uninassau/src/widgets/subscription_section_widget.dart';
 
 class InitialScreen extends StatefulWidget {
   const InitialScreen({super.key});
 
   @override
-  _InitialScreenState createState() => _InitialScreenState();
+  State<InitialScreen> createState() => InitialScreenState();
 }
 
-class _InitialScreenState extends State<InitialScreen> {
+class InitialScreenState extends State<InitialScreen> {
+  final ProductService _productService = ProductService.instance;
+
+  late Future<List<ProductModel>> _futureProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureProducts = _productService.fetchProductsList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final cartService = CartScope.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        leading: Icon(Icons.menu, size: 40),
-        title: Image.asset('assets/logo_usedev.png', height: 40),
-        centerTitle: true,
-        actions: [
-          Icon(Icons.person_outline, size: 40),
-          SizedBox(width: 10),
-          Icon(Icons.shopping_cart_outlined, size: 40),
-          SizedBox(width: 25),
-        ],
-      ),
+      appBar: CustomAppBarWidget(cartService: cartService),
       body: SingleChildScrollView(
         child: Column(
-          spacing: 20,
-          crossAxisAlignment: .stretch,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            HeroSectionWidget(),
+            _buildBanner(),
+            const SizedBox(height: 20),
             Text(
               'Promos Especiais',
-              textAlign: .center,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 28,
-                fontWeight: .bold,
+                fontWeight: FontWeight.bold,
                 fontFamily: GoogleFonts.orbitron().fontFamily,
               ),
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: 5,
-              itemBuilder: (context, index) => ProductCardWidget(
-                nome: 'Produto 0$index',
-                url: 'https://placehold.co/600x600.png',
-                preco: '10$index,00',
+            const SizedBox(height: 12),
+            FutureBuilder<List<ProductModel>>(
+              future: _futureProducts,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.all(40),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Center(
+                      child: Text(
+                        'Erro ao carregar produtos.\nVerifique sua internet.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  );
+                }
+
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('Nenhum produto encontrado.'));
+                }
+
+                final products = snapshot.data!;
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    return ProductCardWidget(product: products[index]);
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBanner() {
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/banner_cta.png'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+        child: Column(
+          children: [
+            Image.asset('assets/hero_cta.png', width: 300),
+            const SizedBox(height: 20),
+            Text.rich(
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: GoogleFonts.orbitron().fontFamily,
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+              ),
+              const TextSpan(
+                text: 'Hora de abraçar seu ',
+                style: TextStyle(color: Color(0xFFFF55DF)),
+                children: [
+                  TextSpan(
+                    text: 'lado geek',
+                    style: TextStyle(color: Color(0xFF8FFF24)),
+                  ),
+                ],
               ),
             ),
-            SubscriptionSectionWidget(),
           ],
         ),
       ),
