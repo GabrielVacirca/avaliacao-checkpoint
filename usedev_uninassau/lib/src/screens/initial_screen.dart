@@ -4,7 +4,9 @@ import 'package:usedev_uninassau/src/models/product_model.dart';
 import 'package:usedev_uninassau/src/services/cart_service.dart';
 import 'package:usedev_uninassau/src/services/product_service.dart';
 import 'package:usedev_uninassau/src/widgets/custom_app_bar_widget.dart';
+import 'package:usedev_uninassau/src/widgets/hero_section_widget.dart';
 import 'package:usedev_uninassau/src/widgets/product_card_widget.dart';
+import 'package:usedev_uninassau/src/widgets/subscription_section_widget.dart';
 
 class InitialScreen extends StatefulWidget {
   const InitialScreen({super.key});
@@ -34,7 +36,7 @@ class InitialScreenState extends State<InitialScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildBanner(),
+            const HeroSectionWidget(),
             const SizedBox(height: 20),
             Text(
               'Promos Especiais',
@@ -85,44 +87,7 @@ class InitialScreenState extends State<InitialScreen> {
                 );
               },
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBanner() {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/banner_cta.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
-        child: Column(
-          children: [
-            Image.asset('assets/hero_cta.png', width: 300),
-            const SizedBox(height: 20),
-            Text.rich(
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: GoogleFonts.orbitron().fontFamily,
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-              ),
-              const TextSpan(
-                text: 'Hora de abraçar seu ',
-                style: TextStyle(color: Color(0xFFFF55DF)),
-                children: [
-                  TextSpan(
-                    text: 'lado geek',
-                    style: TextStyle(color: Color(0xFF8FFF24)),
-                  ),
-                ],
-              ),
-            ),
+            const SubscriptionSectionWidget(),
           ],
         ),
       ),

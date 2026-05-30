@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -14,26 +15,51 @@ class ProductService {
     final uri = Uri.parse(_productsEndpoint);
 
     try {
-      final response = await http.get(uri).timeout(
-            const Duration(seconds: 15),
-          );
+      final response = await http.get(uri).timeout(const Duration(seconds: 15));
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Falha ao comunicar com o servidor. Verifique sua conexão.',
+        throw const ProductServiceException(
+          'Falha ao comunicar com o servidor. Tente novamente.',
         );
       }
 
-      final List<dynamic> rawData = jsonDecode(response.body) as List<dynamic>;
+      final rawData = jsonDecode(response.body);
+      if (rawData is! List<dynamic>) {
+        throw const ProductServiceException(
+          'O catálogo recebeu uma resposta inválida do servidor.',
+        );
+      }
 
       return rawData
           .map((item) => ProductModel.fromJson(item as Map<String, dynamic>))
           .toList();
-    } catch (error) {
-      if (error is Exception) rethrow;
-      throw Exception(
-        'Falha na conexão. Não foi possível carregar o catálogo de produtos.',
+    } on ProductServiceException {
+      rethrow;
+    } on TimeoutException {
+      throw const ProductServiceException(
+        'A conexão demorou demais. Tente novamente.',
+      );
+    } on http.ClientException {
+      throw const ProductServiceException(
+        'Falha na conexão. Verifique sua internet.',
+      );
+    } on FormatException {
+      throw const ProductServiceException(
+        'O catálogo recebeu uma resposta inválida do servidor.',
+      );
+    } catch (_) {
+      throw const ProductServiceException(
+        'Não foi possível carregar o catálogo de produtos.',
       );
     }
   }
+}
+
+class ProductServiceException implements Exception {
+  const ProductServiceException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
 }

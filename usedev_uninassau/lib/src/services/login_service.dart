@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -21,21 +23,46 @@ class LoginService {
     required String username,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username, 'password': password}),
-    );
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/auth/login'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'username': username, 'password': password}),
+          )
+          .timeout(const Duration(seconds: 15));
 
-    print('Status: ${response.statusCode}');
-    print('Body: ${response.body}');
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw const LoginServiceException('Usuário ou senha inválidos.');
+      }
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
-      final token = data['token'] as String;
+      final token = data['token'];
+      if (token is! String || token.isEmpty) {
+        throw const LoginServiceException(
+          'O servidor não retornou um token de autenticação válido.',
+        );
+      }
+
       await _storage.write(key: _tokenKey, value: token);
-    } else {
-      throw Exception('Usuário ou senha inválidos.');
+    } on LoginServiceException {
+      rethrow;
+    } on TimeoutException {
+      throw const LoginServiceException(
+        'A conexão demorou demais. Tente novamente.',
+      );
+    } on http.ClientException {
+      throw const LoginServiceException(
+        'Falha na conexão. Verifique sua internet.',
+      );
+    } on FormatException {
+      throw const LoginServiceException(
+        'O servidor retornou uma resposta inválida.',
+      );
+    } catch (_) {
+      throw const LoginServiceException(
+        'Não foi possível realizar o login. Tente novamente.',
+      );
     }
   }
 
@@ -51,4 +78,13 @@ class LoginService {
   Future<void> logout() async {
     await _storage.delete(key: _tokenKey);
   }
+}
+
+class LoginServiceException implements Exception {
+  const LoginServiceException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
 }

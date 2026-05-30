@@ -78,6 +78,15 @@ class CartService extends ChangeNotifier {
       throw Exception('Não foi possível remover o produto do carrinho.');
     }
   }
+
+  Future<void> clearCart() async {
+    try {
+      _items.clear();
+      notifyListeners();
+    } catch (_) {
+      throw Exception('Não foi possível limpar o carrinho.');
+    }
+  }
 }
 
 class CartScope extends InheritedNotifier<CartService> {

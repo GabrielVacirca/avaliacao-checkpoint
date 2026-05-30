@@ -17,7 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   static const Color _purple = Color(0xFF780BF7);
-  static const Color _background = Color(0xFF2C2C2C);
+  static const Color _background = Colors.white;
 
   @override
   void initState() {
@@ -49,9 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         content: Text(
           'Você já possui uma sessão ativa.\nDeseja continuar para a loja ou sair?',
-          style: TextStyle(
-            fontFamily: GoogleFonts.poppins().fontFamily,
-          ),
+          style: TextStyle(fontFamily: GoogleFonts.poppins().fontFamily),
         ),
         actions: [
           TextButton(
@@ -124,13 +122,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
       _goToHome();
-    } catch (e) {
+    } catch (error) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString().replaceAll('Exception: ', '')),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text('$error'), backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -162,23 +157,49 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black87,
                     letterSpacing: 4,
                     fontFamily: GoogleFonts.orbitron().fontFamily,
                   ),
                 ),
                 const SizedBox(height: 32),
-                _buildTextField(
+                TextField(
                   controller: _usernameController,
-                  hint: 'Usuário',
-                  icon: Icons.person_outline,
+                  style: const TextStyle(color: Colors.black87),
+                  decoration: InputDecoration(
+                    hintText: 'Usuário',
+                    prefixIcon: const Icon(
+                      Icons.person_outline,
+                      color: Colors.grey,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 16),
-                _buildTextField(
+                TextField(
                   controller: _passwordController,
-                  hint: 'Senha',
-                  icon: Icons.lock_outline,
                   obscureText: true,
+                  style: const TextStyle(color: Colors.black87),
+                  decoration: InputDecoration(
+                    hintText: 'Senha',
+                    prefixIcon: const Icon(
+                      Icons.lock_outline,
+                      color: Colors.grey,
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Colors.grey),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 28),
                 SizedBox(
@@ -218,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text(
                     'Esqueceu sua senha?',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: Colors.grey[700],
                       fontFamily: GoogleFonts.poppins().fontFamily,
                     ),
                   ),
@@ -226,30 +247,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    bool obscureText = false,
-  }) {
-    return TextField(
-      controller: controller,
-      obscureText: obscureText,
-      style: const TextStyle(color: Colors.black87),
-      decoration: InputDecoration(
-        hintText: hint,
-        prefixIcon: Icon(icon, color: Colors.grey),
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
         ),
       ),
     );

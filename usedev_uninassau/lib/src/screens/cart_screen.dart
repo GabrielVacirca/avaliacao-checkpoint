@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:usedev_uninassau/src/screens/login_screen.dart';
 import 'package:usedev_uninassau/src/services/cart_service.dart';
+import 'package:usedev_uninassau/src/services/login_service.dart';
 import 'package:usedev_uninassau/src/widgets/cart_item_card_widget.dart';
 import 'package:usedev_uninassau/src/widgets/custom_app_bar_widget.dart';
 
@@ -21,26 +23,78 @@ class CartScreen extends StatelessWidget {
       if (!context.mounted) return;
 
       if (successMessage != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(successMessage)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(successMessage)));
       }
     } catch (_) {
       if (!context.mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Não foi possível atualizar o carrinho. Tente novamente.'),
+          content: Text(
+            'Não foi possível atualizar o carrinho. Tente novamente.',
+          ),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-  void _onCheckout(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Compra finalizada com sucesso!')),
-    );
+  Future<void> _onCheckout(BuildContext context) async {
+    try {
+      final hasToken = await LoginService.instance.hasToken();
+      if (!context.mounted) return;
+
+      if (!hasToken) {
+        await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Login necessário'),
+            content: const Text(
+              'Entre na sua conta antes de finalizar a compra.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('CANCELAR'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const LoginScreen(),
+                    ),
+                  );
+                },
+                child: const Text('ENTRAR'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
+      final cartService = CartScope.of(context);
+      await cartService.clearCart();
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Compra finalizada com sucesso!')),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Não foi possível verificar seu login. Tente novamente.',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
